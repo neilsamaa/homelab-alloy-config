@@ -1,4 +1,4 @@
-declare "postgres_monitor" {
+declare "postgres_custom_query" {
   argument "forward_to" {
     optional = false
   }
