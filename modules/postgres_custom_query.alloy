@@ -8,7 +8,7 @@ declare "postgres_custom_query" {
   }
 
   // --- KOMPONEN EXPORTER POSTGRESQL ---
-  prometheus.exporter.postgres "primary_db" {
+  prometheus.exporter.postgres "custom_queries" {
     data_source_names = [argument.db_dsn.value]
     
     // Arahkan ke lokasi file YAML di dalam container Alloy Anda
@@ -19,8 +19,8 @@ declare "postgres_custom_query" {
     disable_default_metrics = false 
   }
 
-  prometheus.scrape "scrape_postgres" {
-    targets    = prometheus.exporter.postgres.primary_db.targets
+  prometheus.scrape "scrape_custom_queries" {
+    targets    = prometheus.exporter.postgres.custom_queries.targets
     forward_to = argument.forward_to.value
     
     clustering {
