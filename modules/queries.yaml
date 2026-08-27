@@ -1,0 +1,10 @@
+# queries.yaml
+grafana_org_users:
+  query: "SELECT role, COUNT(user_id) AS total FROM org_user GROUP BY role;"
+  metrics:
+    - role:
+        usage: "LABEL"
+        description: "Role of the user (Admin, Editor, Viewer)"
+    - total:
+        usage: "GAUGE"
+        description: "Total number of users per role"
