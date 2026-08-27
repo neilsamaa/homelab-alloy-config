@@ -1,4 +1,4 @@
-declare "node_exporter" {
+declare "layanan_b" {
   // 1. Mendefinisikan argumen agar receiver (seperti remote_write) bisa disuntikkan dari bootstrap.alloy
   argument "forward_to" {
     optional = false
