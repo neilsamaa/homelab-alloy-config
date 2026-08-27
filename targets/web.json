@@ -1,0 +1,6 @@
+[
+  {
+    "targets": ["node-exporter:9100", "10.10.10.206:9100"],
+    "labels": { "env": "production", "tier": "web" }
+  }
+]
