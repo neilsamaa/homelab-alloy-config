@@ -1,0 +1,47 @@
+// Menggunakan local file discovery karena file Git sudah di-clone secara lokal di memory/disk Alloy
+discovery.file "node_targets_web" {
+  files            = ["/var/lib/alloy/git/targets/web.json"]
+  refresh_interval = "30s"
+}
+
+//discovery.file "node_targets_db" {
+//  files            = ["/var/lib/alloy/git/targets/db.json"]
+//  refresh_interval = "30s"
+//}
+
+// Scrape Web Targets dengan Clustering
+prometheus.scrape "node_exporter_web" {
+  targets    = discovery.file.node_targets_web.targets
+  forward_to = [prometheus.remote_write.to_prometheus.receiver]
+  
+  scrape_interval = "15s"
+  
+  clustering {
+    enabled = true
+  }
+}
+
+// Scrape Database Targets dengan Clustering
+//prometheus.scrape "node_exporter_db" {
+//  targets    = discovery.file.node_targets_db.targets
+//  forward_to = [prometheus.remote_write.to_prometheus.receiver]
+  
+//  scrape_interval = "15s"
+  
+//  clustering {
+//    enabled = true
+//  }
+//}
+
+// Remote Write ke Central Prometheus
+prometheus.remote_write "to_prometheus" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+    
+    queue_config {
+      capacity             = 10000
+      max_shards           = 50
+      max_samples_per_send = 2000
+    }
+  }
+}
