@@ -1,24 +1,18 @@
 declare "node_exporter_layanan_b" {
-  // 1. Mendefinisikan argumen agar receiver (seperti remote_write) bisa disuntikkan dari bootstrap.alloy
   argument "forward_to" {
     optional = false
   }
 
-  // 2. Konfigurasi scrape khusus untuk target Layanan A
   prometheus.scrape "layanan_b_metrics" {
     targets = [
-      // Anda bisa memasukkan multiple IP/Hostname dari node Layanan A di sini
-      // Menambahkan custom label (seperti "env" dan "service") sangat disarankan 
-      // untuk mempermudah filtering di Dashboard Grafana nanti
       {"__address__" = "10.10.10.206:9100", "env" = "staging", "service" = "layanan-b"},
-      //{"__address__" = "10.10.10.209:9100", "env" = "production", "service" = "layanan-b"},
+      // {"__address__" = "10.10.10.209:9100", "env" = "production", "service" = "layanan-b"},
+      // {"__address__" = "10.10.10.209:9100", "env" = "production", "service" = "layanan-b"},
+      // {"__address__" = "10.10.10.209:9100", "env" = "production", "service" = "layanan-b"},
     ]
     
-    // 3. Meneruskan metrik ke argumen yang diberikan oleh file pemanggil
     forward_to = argument.forward_to.value
-    
-    // 4. Mengaktifkan clustering agar beban scrape 3 node server ini dibagi rata
-    // ke alloy-1, alloy-2, dan alloy-3
+
     clustering {
       enabled = true
     }
