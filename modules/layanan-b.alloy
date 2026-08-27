@@ -10,8 +10,8 @@ declare "node_exporter" {
       // Anda bisa memasukkan multiple IP/Hostname dari node Layanan A di sini
       // Menambahkan custom label (seperti "env" dan "service") sangat disarankan 
       // untuk mempermudah filtering di Dashboard Grafana nanti
-      //{"__address__" = "10.10.10.209:9100", "env" = "production", "service" = "layanan-a"},
       {"__address__" = "10.10.10.206:9100", "env" = "staging", "service" = "layanan-a"},
+      //{"__address__" = "10.10.10.209:9100", "env" = "production", "service" = "layanan-a"},
     ]
     
     // 3. Meneruskan metrik ke argumen yang diberikan oleh file pemanggil
