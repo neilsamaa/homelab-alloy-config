@@ -1,0 +1,16 @@
+prometheus.scrape "node_metrics" {
+  targets = [
+    {"__address__" = "node-exporter:9100"},
+  ]
+  forward_to = [prometheus.remote_write.prom.receiver]
+  
+  clustering {
+    enabled = true
+  }
+}
+
+prometheus.remote_write "prom" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
