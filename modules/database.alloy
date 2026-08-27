@@ -1,0 +1,28 @@
+declare "postgres_monitor" {
+  // Argumen untuk menerima endpoint remote_write
+  argument "forward_to" {
+    optional = false
+  }
+  
+  // Argumen untuk menerima DSN secara dinamis agar aman
+  argument "db_dsn" {
+    optional = false
+  }
+
+  // 1. Mengaktifkan native exporter bawaan Alloy
+  prometheus.exporter.postgres "primary_db" {
+    connection_string = argument.db_dsn.value
+  }
+
+  // 2. Melakukan scrape internal dari komponen exporter di atas
+  prometheus.scrape "scrape_postgres" {
+    // Alloy otomatis membuat target internal dari exporter
+    targets    = prometheus.exporter.postgres.primary_db.targets
+    forward_to = argument.forward_to.value
+    
+    // Clustering tetap diaktifkan agar beban scrape merata
+    clustering {
+      enabled = true
+    }
+  }
+}
