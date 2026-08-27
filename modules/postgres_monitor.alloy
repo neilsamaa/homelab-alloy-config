@@ -1,0 +1,30 @@
+declare "postgres_monitor" {
+  argument "forward_to" {
+    optional = false
+  }
+
+  argument "db_dsn" {
+    optional = false
+  }
+
+  // --- KOMPONEN EXPORTER POSTGRESQL ---
+  prometheus.exporter.postgres "primary_db" {
+    data_source_names = [argument.db_dsn.value]
+    
+    // Arahkan ke lokasi file YAML di dalam container Alloy Anda
+    custom_queries_config_path = "/etc/alloy/targets/queries.yaml"
+
+    // Opsional: Jika diset true, metrik bawaan (CPU/RAM DB) akan dimatikan
+    // dan hanya metrik custom dari YAML yang akan diekspor.
+    disable_default_metrics = false 
+  }
+
+  prometheus.scrape "scrape_postgres" {
+    targets    = prometheus.exporter.postgres.primary_db.targets
+    forward_to = argument.forward_to.value
+    
+    clustering {
+      enabled = true
+    }
+  }
+}
