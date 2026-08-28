@@ -22,6 +22,7 @@ declare "postgres_custom_query" {
   prometheus.scrape "scrape_custom_queries" {
     targets    = prometheus.exporter.postgres.custom_queries.targets
     forward_to = argument.forward_to.value
+    job_name     = "postgres_custom"
     
     clustering {
       enabled = true
