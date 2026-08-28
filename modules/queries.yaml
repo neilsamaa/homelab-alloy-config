@@ -1,4 +1,3 @@
-# queries.yaml
 grafana_org_users:
   query: "SELECT role, COUNT(user_id) AS total FROM org_user GROUP BY role;"
   metrics:
@@ -8,3 +7,66 @@ grafana_org_users:
     - total:
         usage: "GAUGE"
         description: "Total number of users per role"
+
+pg_replication_lag_custom:
+  query: "SELECT CASE WHEN NOT pg_is_in_recovery() THEN 0 ELSE EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp())) END AS lag"
+  master: true
+  metrics:
+    - lag:
+        usage: "GAUGE"
+        description: "Replication lag in seconds"
+
+pg_table_bloat_estimate:
+  query: |
+    SELECT schemaname, relname, n_dead_tup, n_live_tup
+    FROM pg_stat_user_tables
+  metrics:
+    - schemaname:
+        usage: "LABEL"
+        description: "Schema"
+    - relname:
+        usage: "LABEL"
+        description: "Table"
+    - n_dead_tup:
+        usage: "GAUGE"
+        description: "Dead tuples"
+    - n_live_tup:
+        usage: "GAUGE"
+        description: "Live tuples"
+
+pg_dr_replication:
+  query: |
+    SELECT
+      current_database() AS database,
+      application_name,
+      state,
+      COALESCE(EXTRACT(EPOCH FROM write_lag), 0)::double precision  AS write_lag_seconds,
+      COALESCE(EXTRACT(EPOCH FROM flush_lag), 0)::double precision  AS flush_lag_seconds,
+      COALESCE(EXTRACT(EPOCH FROM replay_lag), 0)::double precision AS replay_lag_seconds
+    FROM pg_stat_replication
+  metrics:
+    - database:          { usage: "LABEL" }
+    - application_name:  { usage: "LABEL" }
+    - state:             { usage: "LABEL" }
+    - write_lag_seconds: { usage: "GAUGE" }
+    - flush_lag_seconds: { usage: "GAUGE" }
+    - replay_lag_seconds:{ usage: "GAUGE" }
+
+# /etc/alloy/custom-postgres-metrics.yaml
+# Example 1: Tracking application specific users
+#pg_total_active_users:
+#  query: "SELECT count(*) as count FROM users WHERE last_login > now() - INTERVAL '15 minutes'"
+#  metrics:
+#    - count:
+#        usage: "GAUGE"
+#        description: "The total number of users active in the last 15 minutes."
+# Example 2: Tracking orders by status (Mapping a database column as a Prometheus label)
+#pg_orders_by_status:
+#  query: "SELECT status, count(*) as order_count FROM orders GROUP BY status"
+#  metrics:
+#    - status:
+#        usage: "LABEL"
+#        description: "The status of the orders (e.g., pending, completed, failed)."
+#    - order_count:
+#        usage: "GAUGE"
+#        description: "The number of orders matching this status."
