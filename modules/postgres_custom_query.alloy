@@ -16,7 +16,7 @@ declare "postgres_custom_query" {
 
     // Opsional: Jika diset true, metrik bawaan (CPU/RAM DB) akan dimatikan
     // dan hanya metrik custom dari YAML yang akan diekspor.
-    disable_default_metrics = false 
+    disable_default_metrics = true 
   }
 
   prometheus.scrape "scrape_custom_queries" {
