@@ -11,11 +11,9 @@ declare "postgres_custom_query" {
   prometheus.exporter.postgres "custom_queries" {
     data_source_names = [argument.db_dsn.value]
     
-    // Arahkan ke lokasi file YAML di dalam container Alloy Anda
     custom_queries_config_path = "/etc/alloy/targets/queries.yaml"
 
     // Opsional: Jika diset true, metrik bawaan (CPU/RAM DB) akan dimatikan
-    // dan hanya metrik custom dari YAML yang akan diekspor.
     disable_default_metrics = true 
   }
 
